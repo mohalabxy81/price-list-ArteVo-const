@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة أسعار بنود التشطيبات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to apply the Cairo font */
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Style for active tab */
+        .tab-active {
+            border-color: #3b82f6;
+            /* blue-500 */
+            color: #3b82f6;
+            background-color: #eff6ff;
+            /* blue-50 */
+        }
+
+        /* Hide scrollbar but allow scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">قائمة أسعار مقاول</h1>
+            <p class="text-gray-600 mt-2">نقدم لكم قائمة أسعار تفصيلية لمختلف البنود لعام 2025</p>
+        </header>
+
+        <div class="mb-6">
+            <input type="text" id="searchInput" onkeyup="filterTables()" placeholder="ابحث عن بند..."
+                class="w-full px-4 py-3 text-lg text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+        </div>
+
+        <div class="mb-4 border-b border-gray-200">
+            <nav class="flex overflow-x-auto no-scrollbar -mb-px" aria-label="Tabs">
+                </nav>
+        </div>
+
+        <main id="tab-content-container">
+            </main>
+
+    </div>
+
+    <script>
+        // Data derived from the provided CSV files
+        const priceData = {
+            "السباكة": [{
+                item: "سباكة حمام عادى ( شاور ) تاسيس + تشطيب",
+                unit: "عدد",
+                price: "2200",
+                notes: "تأسيس 1700   تشطيب 500"
+            }, {
+                item: "سباكة حمام عادى بدون شاور تأسيس + تشطيب",
+                unit: "عدد",
+                price: "450",
+                notes: "تأسيس 1400   تشطيب 500"
+            }, {
+                item: "سباكة مطبخ تأسيس + تشطيب",
+                unit: "عدد",
+                price: "550",
+                notes: "تأسيس 1300   تشطيب 500"
+            }, {
+                item: "صرف التكييف الكونسيلد (للجهاز الواحد)",
+                unit: "عدد",
+                price: "250",
+                notes: "تأسيس 200   تشطيب 100"
+            }, {
+                item: "صرف التكييف العادى (للجهاز الواحد",
+                unit: "عدد",
+                price: "250",
+                notes: "تأسيس 100   تشطيب 100"
+            }, {
+                item: "تأسيس كوفى كورنر",
+                unit: "عدد",
+                price: "150",
+                notes: "تأسيس 400   تشطيب 100"
+            }, {
+                item: "تأسيس رف غسيل",
+                unit: "عدد",
+                price: "150",
+                notes: "تأسيس 250   تشطيب 100"
+            }, {
+                item: "تعديل داخلي في الشقة",
+                unit: "عدد",
+                price: "150",
+                notes: "تأسيس 200   تشطيب 100"
+            }, {
+                item: "تأسيس قاعدة معلقة ",
+                unit: "عدد",
+                price: "150",
+                notes: "تأسيس 150   تشطيب 100"
+            }, {
+                item: "تأسيس خلاط دفن",
+                unit: "عدد",
+                price: "150",
+                notes: "تأسيس 300   تشطيب 100"
+            }, {
+                item: "تركيب قاعدة دفن",
+                unit: "عدد",
+                price: "250",
+                notes: "تأسيس 300   تشطيب 100"
+            }, {
+                item: "بانيو مبانى /قاعدة اضافى / مبولة / دية / بانيو / بانيو اضافى",
+                unit: "عدد",
+                price: "250",
+                notes: "تأسيس 300   تشطيب 100"
+            }, {
+                item: "تعديل الصرف الخارجى",
+                unit: "عدد",
+                price: "450",
+                notes: "تأسيس 200   تشطيب 100"
+            }, {
+                item: "تعديل على الحبل",
+                unit: "عدد",
+                price: "600",
+                notes: "تأسيس 300   تشطيب 100"
+            }, {
+                item: "تعديل على مسافة طويلة",
+                unit: "عدد",
+                price: "600",
+                notes: "تأسيس 400   تشطيب 100"
+            }, ],
+            "كهرباء": [{
+                item: "تأسيس تكسير",
+                unit: "من مراحل العمل",
+                price: "30%",
+                notes: "تأسيس"
+            }, {
+                item: "تأسيس تركيب علب  + خراطيم",
+                unit: "من مراحل العمل",
+                price: "50%",
+                notes: "تأسيس"
+            }, {
+                item: "تأسيس عند تقديم محضر الاستلام",
+                unit: "من مراحل العمل",
+                price: "20%",
+                notes: "تأسيس"
+            }, {
+                item: "تشطيب سحب سلوك",
+                unit: "من مراحل العمل",
+                price: "25%",
+                notes: "تشطيب"
+            }, {
+                item: "تشطيب تفتيح سبوتات و سحب سلوك",
+                unit: "من مراحل العمل",
+                price: "25%",
+                notes: "تشطيب"
+            }, {
+                item: "تشطيب تقفيل شاسيهات و مفاتيح",
+                unit: "من مراحل العمل",
+                price: "20%",
+                notes: "تشطيب"
+            }, {
+                item: "تشطيب تركيب الانارات بالكامل",
+                unit: "من مراحل العمل",
+                price: "20%",
+                notes: "تشطيب"
+            }, {
+                item: "تشطيب اوشاش + محضر استلام",
+                unit: "من مراحل العمل",
+                price: "10%",
+                notes: "تشطيب"
+            }, ],
+            "المحارة": [{
+                item: "طرطشة",
+                unit: "من مراحل العمل",
+                price: "5%",
+                notes: "يجب أن تكون حادة الملمس"
+            }, {
+                item: "بؤج",
+                unit: "من مراحل العمل",
+                price: "25%",
+                notes: "يجب استلام البؤج ميزان و زاوية أو حسب المتفق عليه إن وجدت أكسات"
+            }, {
+                item: "ملو وتم سندات دفع",
+                unit: "من مراحل العمل",
+                price: "55%",
+                notes: "اجب استلام الأسقف و الحوائط و المونة لسا خضراء"
+            }, {
+                item: "محضر الاستلام",
+                unit: "من مراحل العمل",
+                price: "15%",
+                notes: "التأكد من نظافة الموقع"
+            }, ],
+            "نقاشة": [{
+                item: "سيلر و معجون",
+                unit: "من مراحل العمل",
+                price: "30%",
+                notes: "يجب معالجة السطح و مرشمة و تجلية بالحجر (تنعيم الحوائط) قبل البدء بالأعمال "
+            }, {
+                item: "بطانات",
+                unit: "من مراحل العمل",
+                price: "20%",
+                notes: "يجب دهنها بوجهين"
+            }, {
+                item: "تشطيب اسقف",
+                unit: "من مراحل العمل",
+                price: "10%",
+                notes: "يجب دهانه 2 وش"
+            }, {
+                item: "تشطيب حوائط",
+                unit: "من مراحل العمل",
+                price: "20%",
+                notes: "يجب دهانه 2 وش"
+            }, {
+                item: "تقفيل بعد الاسترجي",
+                unit: "من مراحل العمل",
+                price: "10%",
+                notes: "يجب التقفيل حول الأبواب و الشبابيك و التجاليد"
+            }, {
+                item: "محضر استلام",
+                unit: "من مراحل العمل",
+                price: "10%",
+                notes: "التأكد من نظافة الموقف و الوزر و السيراميك"
+            }, ],
+            "سيراميك": [{
+                item: "أمر شغل",
+                unit: "متر مربع",
+                price: "5%",
+                notes: "يجب مراعاة نظافة الموقع و تشوينات و تجهيز الموقع مفروش رمل"
+            }, {
+                item: "تدفع على حسب محضر المقاسات النهائية",
+                unit: "متر مربع من مراحل العمل",
+                price: "55%",
+                notes: "يجب مراعاة عدم دفن المونة الزيادة في الرمل و تشغيلها بدلا من ذلك"
+            }, {
+                item: "سقية",
+                unit: "من مراحل العمل مربع",
+                price: "15%",
+                notes: "يجب مراعاة ملو جميع الفراغات و نظافة العراميس جدا بالفرشاة"
+            }, {
+                item: "تركيب الوزر و تقفيل بعد النجارة أبواب",
+                unit: "متر طولي",
+                price: "15%",
+                notes: "تقفيل حول الأبواب و السقية"
+            }, {
+                item: "محضر الاستلام",
+                unit: "متر طولي",
+                price: "10%",
+                notes: "يجب مراعاة نظافة الموقع و ارجاع المرتجع  و عمل محضر مقاسات نهائية"
+            }, ],
+            "جبسيوم بورد": [{
+                item: "توريد",
+                unit: "متر مربع أو متر طولي حسب الطلب",
+                price: "55%",
+                notes: "شامل الخامات والصاج و يجب التخزين في مكان بعيد عن الماء او الرطوبة"
+            }, {
+                item: "مع مراحل العمل",
+                unit: "متر مربع أو متر طولي حسب الطلب",
+                price: "20%",
+                notes: "يجب مراعاة نظافة الموقع من أي جبس في الأرض أو على الرمل"
+            }, {
+                item: "معجون",
+                unit: "متر مربع أو متر طولي حسب الطلب",
+                price: "10%",
+                notes: "يجب مراعاة عدم وجود أي تشققات أو فراغات و تغطية جميع المامير و عددم وجود رأس مسامير بارزة"
+            }, {
+                item: "محضر استلام",
+                unit: "متر مربع أو متر طولي حسب الطلب",
+                price: "15%",
+                notes: "يجب مراعاة نظافة الموقع و عمل محضر مقاسات نهائية"
+            }, ],
+            "نجارة": [{
+                item: "أمر الشغل",
+                unit: "حسب الطلب",
+                price: "50%",
+                notes: "يجب مراعاة نظافة الموقع و التوصيف الفني"
+            }, {
+                item: "مراحل العمل",
+                unit: "حسب الطلب",
+                price: "30%",
+                notes: "شامل يجب مراعاة نظافة الموقع و مطابقة المواصفات "
+            }, {
+                item: "بعد النجار و النقاش",
+                unit: "حسب الطلب",
+                price: "10%",
+                notes: "يجب التقفيل حولل النجارة بشكل جيد "
+            }, {
+                item: "محضر استلام",
+                unit: "حسب الطلب",
+                price: "10%",
+                notes: "نظافة الموقع و عمل محضر مقاسات نهائية بكل ما تم عمله في الموقع من نجارة"
+            }, ],
+            "UPVC": [{
+                item: "أمر الشغل",
+                unit: "متر مربع أو حسب الطلب",
+                price: "60%",
+                notes: "يجب نظافة الموقع و التوصيف الفني و اختيار القطاعات و الألوان و نوع الزجاج و لونه "
+            }, {
+                item: "توريد",
+                unit: "متر متر مربع أو حسب الطلب",
+                price: "25%",
+                notes: "يجب مراعاة نظافة الموقع و الإنتهاء من جميع الأعمال حول أماكن تركيب الupvc من محارة و دهانات"
+            }, {
+                item: "تركيب",
+                unit: "متر مربع أو حسب الطلب مربع",
+                price: "15%",
+                notes: "يجب مرراعاة التقفيل حول الUPVC بشكل جيد و تثبيته و التأكد من جميع المفصلات و الأكر تعمل بشكل ممتاز و لا يوجد أى عيب و مراعاة نظافتهو نظافة الزجاج"
+            }, {
+                item: "محضر استلام",
+                unit: "متر متر مربع أو حسب الطلب",
+                price: "5%",
+                notes: "عمل محضر إستلام بالقياسات النهائية"
+            }, ],
+            "سيكوريت و مرايات": [{
+                item: "أمر الشغل",
+                unit: "متر مربع أو حسب الطلب",
+                price: "60%",
+                notes: "يجب مراعاة نظافة الموقع و التوصيف الفني و اختيار القطاعات و الألوان و نوع الزجاج و لونه و شكل السنفرة و شكل القطاع"
+            }, {
+                item: "مراحل العمل",
+                unit: "مربع أو حسب الطلب",
+                price: "20%",
+                notes: "نظافة الموقع و التأكد من عدم وجود أي تشققات أو فراغات و من نظافة القطاع و الزجاج و لفه بورق جرايد"
+            }, {
+                item: "تركيب",
+                unit: "مربع أو حسب الطلب",
+                price: "10%",
+                notes: "نظافة الموقع و التأكد من عدم وجود أي تشققات أو فراغات و من نظافة القطاع و الزجاج و لفه بورق جرايد"
+            }, {
+                item: "محضر استلام",
+                unit: "مربع أو حسب الطلب",
+                price: "10%",
+                notes: "عمل محضر مقاسات نهائية بالأعمال"
+            }, ],
+            "دش ستلايت": [{
+                item: "أمر الشغل",
+                unit: "حسب الطلب",
+                price: "60%",
+                notes: "نظافة الموقع و التوصيف الفني و التأكد من تسليك خراطيم التيار الخفيف "
+            }, {
+                item: "مراحل العمل",
+                unit: "حسب الطلب",
+                price: "20%",
+                notes: "نظافة الموقع"
+            }, {
+                item: "شد سلك دش",
+                unit: "حسب الطلب",
+                price: "10%",
+                notes: " و التأكد من عدم وجود لحامات في الأسلاك و توصيلها للتيار الخفيف مباشرة و كل نقطة"
+            }, {
+                item: "محضر استلام",
+                unit: "حسب الطلب",
+                price: "10%",
+                notes: "عمل محضر استلام بالقياسات النهائية و ما تم عمله طبقا لأمر الشغل"
+            }, ],
+            "رخام": [{
+                item: "أمر الشغل",
+                unit: "متر مربع و متر طولى أو حسب الطلب",
+                price: "60%",
+                notes: "نظافة الموقع و التوصيف الفني و اللوحات "
+            }, {
+                item: "توريد و تركيب",
+                unit: "متر مربع و متر طولى أو حسب الطلب",
+                price: "10%",
+                notes: "نظافة الموقع و عدم وجود لحامات و التأكد من مطابقة الالوان و نوع الرخام و التقفيل جيدا و الميزان"
+            }, {
+                item: "تشطيب",
+                unit: "متر مربع و متر طولى أو حسب الطلب",
+                price: "20%",
+                notes: "التأكد من التشطيب الجيد بالإسكوتشات و كسر السوكة دوران"
+            }, {
+                item: "محضر استلام",
+                unit: "متر مربع و متر طولى أو حسب الطلب",
+                price: "5%",
+                notes: "عمل محضر استلام بالمقاسات النهائية"
+            }, {
+                item: "تلميع",
+                unit: "متر مربع و متر طولى أو حسب الطلب",
+                price: "5%",
+                notes: "تلميع الرخام جيدا و نظافته و نظافة الموقع"
+            }, ],
+            "بلتكنات ستائر": [{
+                item: "أمر الشغل",
+                unit: "متر طولي",
+                price: "60%",
+                notes: "نظافة الموقع و التوصيف الفني و عدد المجرة و مراعاة بيت الستارة من مقاسات"
+            }, {
+                item: "مراحل العمل توريد و تركيب",
+                unit: "متر طولي",
+                price: "30%",
+                notes: "التثبيت بشكل جيد و التأكد من تركيبه بشكل صحيح"
+            }, {
+                item: "محضر استلام",
+                unit: "متر طولي",
+                price: "10%",
+                notes: "عمل محضر استلام بالأعمال و الأمتار المنفذة"
+            }, ],
+            "صاج تجهيزات تكييفات كونسيلد": [{
+                item: "أمر الشغل",
+                unit: "حسب الطلب",
+                price: "50%",
+                notes: "نظافة الموقع و التوصيف الفني و اللوحات و الخامات و الأمتار"
+            }, {
+                item: "توريد",
+                unit: "حسب الطلب",
+                price: "40%",
+                notes: "نظافة الموقع و التثبيت الجيد و التأكد من عدم وجود أي فراغات بين الصاج و اللحامات "
+            }, {
+                item: "محضر استلام",
+                unit: "حسب الطلب",
+                price: "10%",
+                notes: "عمل محضر استلام بالأعمال و الأمتار المنفذة حسب أمر الشغل"
+            }, ],
+
+
+
+        };
+
+        const tabsNav = document.querySelector('nav[aria-label="Tabs"]');
+        const tabsContentContainer = document.getElementById('tab-content-container');
+
+
+        // Function to create and render all tabs and content
+        function renderTabsAndContent() {
+            let tabCounter = 0;
+            for (const category in priceData) {
+                const isFirstTab = tabCounter === 0;
+
+                // Create Tab Link
+                const tabLink = document.createElement('a');
+                tabLink.href = '#';
+                // ** تعديل هنا: استخدمنا اسم الفئة ليكون المعرف **
+                tabLink.id = `nav-${category}`;
+                tabLink.textContent = category;
+                tabLink.classList.add('whitespace-nowrap', 'flex-shrink-0', 'px-4', 'py-3', 'text-sm', 'sm:text-base', 'font-medium', 'border-b-2', 'border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'transition-colors', 'duration-200');
+                if (isFirstTab) {
+                    tabLink.classList.add('tab-active');
+                }
+                tabLink.dataset.tab = `tab-${tabCounter}`;
+
+                // Create Tab Content Panel
+                const tabContent = document.createElement('div');
+                tabContent.id = `tab-${tabCounter}`;
+                tabContent.setAttribute('role', 'tabpanel');
+                if (!isFirstTab) {
+                    tabContent.classList.add('hidden');
+                }
+
+                // Create Table
+                const table = createTableForCategory(priceData[category]);
+                tabContent.appendChild(table);
+
+                // Append to DOM
+                tabsNav.appendChild(tabLink);
+                tabsContentContainer.appendChild(tabContent);
+
+                // Add event listener
+                tabLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activateTab(tabLink, tabContent);
+                });
+
+                tabCounter++;
+            }
+        }
+
+        // ** دالة جديدة لتنشيط التبويب **
+        function activateTab(tabLink, tabContent) {
+            // Deactivate all tabs
+            tabsNav.querySelectorAll('a').forEach(link => link.classList.remove('tab-active'));
+            tabsContentContainer.querySelectorAll('div[role="tabpanel"]').forEach(panel => panel.classList.add('hidden'));
+
+            // Activate clicked tab
+            tabLink.classList.add('tab-active');
+            tabContent.classList.remove('hidden');
+
+            // إزالة الـ hash من الرابط لتجربة أفضل
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+
+        // Function to create a table for a specific category
+        function createTableForCategory(data) {
+            const tableContainer = document.createElement('div');
+            tableContainer.classList.add('overflow-x-auto', 'bg-white', 'rounded-lg', 'shadow-md');
+
+            const table = document.createElement('table');
+            table.classList.add('min-w-full', 'divide-y', 'divide-gray-200', 'price-table');
+
+            const thead = document.createElement('thead');
+            thead.classList.add('bg-gray-50');
+            thead.innerHTML = `
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">بيان الأعمال</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوحدة</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر (ج.م)</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ملاحظات</th>
+                </tr>
+            `;
+
+            const tbody = document.createElement('tbody');
+            tbody.classList.add('bg-white', 'divide-y', 'divide-gray-200');
+
+            data.forEach(rowData => {
+                const tr = document.createElement('tr');
+                tr.classList.add('hover:bg-gray-50', 'transition-colors');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${rowData.item}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${rowData.unit}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-semibold">${rowData.price}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${rowData.notes}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+
+            return tableContainer;
+        }
+
+        // Function to filter tables based on search input
+        function filterTables() {
+            const filter = document.getElementById('searchInput').value.toUpperCase();
+            const tables = document.querySelectorAll('.price-table');
+
+            tables.forEach(table => {
+                const rows = table.getElementsByTagName('tr');
+                for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j]) {
+                            if (cells[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (found) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            });
+        }
+        
+        // ** دالة جديدة للتعامل مع الرابط القادم من الصفحة الأخرى **
+        function handleUrlHash() {
+            const hash = decodeURIComponent(window.location.hash.substring(1));
+            if (hash) {
+                const targetTabLink = document.getElementById(`nav-${hash}`);
+                if (targetTabLink) {
+                    const targetTabContentId = targetTabLink.dataset.tab;
+                    const targetTabContent = document.getElementById(targetTabContentId);
+                    if (targetTabContent) {
+                        activateTab(targetTabLink, targetTabContent);
+                    }
+                }
+            }
+        }
+
+
+        // Initial render on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTabsAndContent();
+            handleUrlHash(); // ** تشغيل الدالة الجديدة بعد إنشاء التبويبات **
+        });
+    </script>
+
+</body>
+
+</html>
